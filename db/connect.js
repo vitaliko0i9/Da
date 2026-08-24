@@ -1,18 +1,40 @@
 const mongoose = require("mongoose");
 
-const MONGODB_URI = process.env.MONGODB_URI;
+let cached = global.mongoose;
 
-if (!MONGODB_URI) {
-  throw new Error("MONGODB_URI не задано. Перевірте файл .env (див. .env.example).");
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
-mongoose.set("strictQuery", true);
-
 async function connectDB() {
-  if (mongoose.connection.readyState === 1) return mongoose.connection;
-  await mongoose.connect(MONGODB_URI);
-  console.log("MongoDB Atlas → підключено");
-  return mongoose.connection;
+  const uri =
+    process.env.MONGODB_URI ||
+    "mongodb://maksmasov10_db_user:T4W50EckO8Lus0ls@ac-ybj1kua-shard-00-00.emwl75k.mongodb.net:27017,ac-ybj1kua-shard-00-01.emwl75k.mongodb.net:27017,ac-ybj1kua-shard-00-02.emwl75k.mongodb.net:27017/aquafauna?ssl=true&replicaSet=atlas-z4z7i0-shard-0&authSource=admin&appName=Cluster0";
+
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    mongoose.set("strictQuery", true);
+    cached.promise = mongoose
+      .connect(uri, {
+        bufferCommands: false,
+      })
+      .then((mongooseInstance) => {
+        console.log("MongoDB Atlas → підключено");
+        return mongooseInstance;
+      });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
+  return cached.conn;
 }
 
 module.exports = connectDB;

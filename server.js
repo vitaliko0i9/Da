@@ -20,10 +20,10 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(process.cwd(), "public")));
 
 // View engine
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(process.cwd(), "views"));
 app.set("view engine", "html");
 app.engine("html", ejs.renderFile);
 
@@ -31,6 +31,17 @@ app.engine("html", ejs.renderFile);
 app.use((req, _res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
+});
+
+// Database connection middleware for Serverless
+app.use(async (req, _res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("DB connection error:", err);
+    next(err);
+  }
 });
 
 const NAV = [
@@ -241,7 +252,7 @@ Allow: /images/
 Allow: /css/
 Allow: /js/
 
-# Заборона індексації технічних API
+# Заборона індексації технічних API-ендпоінтів
 Disallow: /api/
 
 # Карта сайту
@@ -369,18 +380,21 @@ app.use((err, req, res, _next) => {
   res.status(500).send("Внутрішня помилка сервера");
 });
 
-// Start Server
-async function startServer() {
-  try {
-    await connectDB();
-    await seedData();
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-    });
-  } catch (err) {
-    console.error("Не вдалося запустити сервер:", err);
-    process.exit(1);
-  }
-}
+// Export app for Vercel Serverless Functions
+module.exports = app;
 
-startServer();
+// Local Development Server (only when not running on Vercel)
+if (!process.env.VERCEL) {
+  async function startServer() {
+    try {
+      await connectDB();
+      await seedData();
+      app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+      });
+    } catch (err) {
+      console.error("Не вдалося запустити локальний сервер:", err);
+    }
+  }
+  startServer();
+}
