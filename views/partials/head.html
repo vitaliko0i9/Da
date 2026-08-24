@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %></title>
+  <meta name="description" content="<%= description %>">
+  <meta name="keywords" content="<%= keywords %>">
+  <meta name="author" content="AquaFauna">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="<%= siteUrl %><%= path === '/' ? '' : path %>">
+  <meta property="og:locale" content="uk_UA">
+  <meta property="og:type" content="<%= type %>">
+  <meta property="og:site_name" content="<%= siteName %>">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:description" content="<%= description %>">
+  <meta property="og:url" content="<%= siteUrl %><%= path === '/' ? '' : path %>">
+  <meta property="og:image" content="<%= siteUrl %><%= ogImage %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= title %>">
+  <meta name="twitter:description" content="<%= description %>">
+  <meta name="twitter:image" content="<%= siteUrl %><%= ogImage %>">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=2">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "AquaFauna",
+        "url": "<%= siteUrl %>",
+        "inLanguage": "uk",
+        "description": "Енциклопедія світу риб українською"
+      },
+      {
+        "@type": "Organization",
+        "name": "AquaFauna",
+        "url": "<%= siteUrl %>",
+        "logo": "<%= siteUrl %>/favicon.svg"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти до змісту</a>
+  <div class="sea-glow" aria-hidden="true"></div>

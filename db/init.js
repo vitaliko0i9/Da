@@ -1,0 +1,354 @@
+const fs = require("fs");
+const path = require("path");
+const Database = require("better-sqlite3");
+
+const dataDir = path.join(__dirname, "..", "data");
+fs.mkdirSync(dataDir, { recursive: true });
+
+const db = new Database(path.join(dataDir, "aquafauna.db"));
+db.pragma("journal_mode = WAL");
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS habitats (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    water_type TEXT NOT NULL,
+    temperature TEXT NOT NULL,
+    salinity TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    description TEXT NOT NULL,
+    image TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS fish (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    name_uk TEXT NOT NULL,
+    name_lat TEXT NOT NULL,
+    family TEXT NOT NULL,
+    habitat_slug TEXT NOT NULL,
+    region TEXT NOT NULL,
+    size_cm REAL NOT NULL,
+    lifespan_years INTEGER NOT NULL,
+    diet TEXT NOT NULL,
+    care_level TEXT NOT NULL,
+    temperature TEXT NOT NULL,
+    ph TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    description TEXT NOT NULL,
+    facts TEXT NOT NULL,
+    image TEXT NOT NULL,
+    FOREIGN KEY (habitat_slug) REFERENCES habitats(slug)
+  );
+
+  CREATE TABLE IF NOT EXISTS gallery (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    caption TEXT NOT NULL,
+    image TEXT NOT NULL,
+    category TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    topic TEXT NOT NULL,
+    body TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+`);
+
+const habitatCount = db.prepare("SELECT COUNT(*) AS n FROM habitats").get().n;
+
+if (habitatCount === 0) {
+  const insertHabitat = db.prepare(`
+    INSERT INTO habitats (slug, name, water_type, temperature, salinity, summary, description, image)
+    VALUES (@slug, @name, @water_type, @temperature, @salinity, @summary, @description, @image)
+  `);
+
+  const insertFish = db.prepare(`
+    INSERT INTO fish (
+      slug, name_uk, name_lat, family, habitat_slug, region, size_cm, lifespan_years,
+      diet, care_level, temperature, ph, summary, description, facts, image
+    ) VALUES (
+      @slug, @name_uk, @name_lat, @family, @habitat_slug, @region, @size_cm, @lifespan_years,
+      @diet, @care_level, @temperature, @ph, @summary, @description, @facts, @image
+    )
+  `);
+
+  const insertGallery = db.prepare(`
+    INSERT INTO gallery (title, caption, image, category)
+    VALUES (@title, @caption, @image, @category)
+  `);
+
+  const habitats = [
+    {
+      slug: "coral-reef",
+      name: "Коралові рифи",
+      water_type: "Солона",
+      temperature: "24–28 °C",
+      salinity: "32–35 ppt",
+      summary: "Найбарвистіші екосистеми океану: корали, анемони та тисячі видів риб.",
+      description:
+        "Коралові рифи займають менше ніж 1% дна океану, але дають прихисток майже чверті всіх морських видів. Теплі прозорі води, складна архітектура коралів і рясний планктон створюють ідеальні умови для дрібних рифних риб. Стабільна солоність і яскраве світло — ключ до здоров’я рифу, тому будь-які зміни температури чи кислотності води впливають на всю харчову мережу.",
+      image: "/images/habitat-reef.png",
+    },
+    {
+      slug: "amazon",
+      name: "Амазонські води",
+      water_type: "Прісна",
+      temperature: "26–30 °C",
+      salinity: "0 ppt",
+      summary: "Чорні та білі річки Амазонії — батьківщина скалярій, неонів і дискусів.",
+      description:
+        "Басейн Амазонки поєднує «чорні» річки з танінами опалого листя та «білі» каламутні потоки з Анд. Вода м’яка, часто кисла, багата на гумінові речовини. Густі зарості рослин, корчі та тінь крони лісу формують схованки для зграйних і територіальних риб. Саме звідси походять класичні акваріумні види Південної Америки.",
+      image: "/images/habitat-amazon.png",
+    },
+    {
+      slug: "pond",
+      name: "Ставки та озера",
+      water_type: "Прісна",
+      temperature: "8–26 °C",
+      salinity: "0 ppt",
+      summary: "Повільні водойми Євразії, де живуть коропи коі та золоті рибки.",
+      description:
+        "Ставки, паркові водойми й тихі затоки озер мають сезонні коливання температури, шар мулу та рослинний пояс біля берега. Риби тут витривалі: вони переживають зиму в глибших шарах і активно харчуються влітку. Для декоративних порід важливі якість води, аерація та захист від хижаків.",
+      image: "/images/habitat-pond.png",
+    },
+    {
+      slug: "asia-fresh",
+      name: "Тропічні мілководдя Азії",
+      water_type: "Прісна",
+      temperature: "24–30 °C",
+      salinity: "0 ppt",
+      summary: "Рисові чеки, канави й лісові струмки Індокитаю — дім бетти та інших лабіринтових.",
+      description:
+        "Мілководдя Південно-Східної Азії прогріваються, багаті на рослини й інколи бідні на кисень. Саме тут еволюціонував лабіринтовий орган: риба хапає повітря з поверхні. Вода може бути каламутною після дощу й відносно чистою в лісових струмках. Для акваріума це означає тепло, спокійну течію і густі зарості, а не крихітну вазу на підвіконні.",
+      image: "/images/aquarium-scape.png",
+    },
+    {
+      slug: "open-ocean",
+      name: "Відкритий океан",
+      water_type: "Солона",
+      temperature: "4–26 °C",
+      salinity: "34–36 ppt",
+      summary: "Пелагічна зона: світло зверху, холод і тиск унизу, міграції на кілометри.",
+      description:
+        "Відкритий океан — тривимірний простір без укриттів. Риби тут покладаються на швидкість, камуфляж і зграйну поведінку. Верхні шари прогріваються сонцем, глибина залишається холодною. Харчові ланцюги починаються з фітопланктону і сягають великих хижаків. Для акваріумістики ця зона майже недоступна, але саме вона визначає клімат і кисень планети.",
+      image: "/images/habitat-ocean.png",
+    },
+  ];
+
+  const fish = [
+    {
+      slug: "clownfish",
+      name_uk: "Риба-клоун",
+      name_lat: "Amphiprion ocellaris",
+      family: "Pomacentridae",
+      habitat_slug: "coral-reef",
+      region: "Індо-Тихоокеанський регіон",
+      size_cm: 11,
+      lifespan_years: 10,
+      diet: "Всеїдна (зоопланктон, водорості)",
+      care_level: "Середній",
+      temperature: "24–27 °C",
+      ph: "8.0–8.4",
+      summary: "Символ рифів: живе в симбіозі з актиніями та змінює стать у групі.",
+      description:
+        "Риба-клоун оселяється серед щупалець актинії, які для інших риб отруйні. Слиз на шкірі клоуна захищає його від жалких клітин господаря. У природі група складається з домінантної самки, самця та кількох молодих особин. Якщо самка гине, найбільший самець змінює стать. В акваріумі потрібен стабільний морський біотоп, живий камінь і якісна біофільтрація.",
+      facts: JSON.stringify([
+        "Симбіоз з актиніями триває все життя риби.",
+        "Здатні видавати клацаючі звуки під час конфліктів.",
+        "Популярність після мультфільмів не зменшила їхньої вибагливості до якості води.",
+      ]),
+      image: "/images/clownfish.png",
+    },
+    {
+      slug: "betta",
+      name_uk: "Бійцівська рибка",
+      name_lat: "Betta splendens",
+      family: "Osphronemidae",
+      habitat_slug: "asia-fresh",
+      region: "Південно-Східна Азія (рисове поле, канави)",
+      size_cm: 7,
+      lifespan_years: 4,
+      diet: "Хижак (комахи, личинки)",
+      care_level: "Початковий+",
+      temperature: "24–28 °C",
+      ph: "6.5–7.5",
+      summary: "Лабіринтова риба з пишними плавцями; дихає атмосферним повітрям.",
+      description:
+        "Бетта походить з мілководь Таїланду, В’єтнаму та Камбоджі. Лабіринтовий орган дозволяє хапати повітря з поверхні, тому крихітні «вазочки» без обігріву — міф, а не догляд. Самці агресивні один до одного; у спільному акваріумі потрібні спокійні сусіди та багато укриттів.",
+      facts: JSON.stringify([
+        "Будує пінне гніздо на поверхні води.",
+        "Розпізнає хазяїна і реагує на рух біля скла.",
+        "Довгі плавці селекційних форм потребують чистої води без гострих декорацій.",
+      ]),
+      image: "/images/betta.png",
+    },
+    {
+      slug: "koi",
+      name_uk: "Короп коі",
+      name_lat: "Cyprinus rubrofuscus",
+      family: "Cyprinidae",
+      habitat_slug: "pond",
+      region: "Східна Азія, декоративні ставки світу",
+      size_cm: 70,
+      lifespan_years: 30,
+      diet: "Всеїдний",
+      care_level: "Досвідчений",
+      temperature: "15–25 °C",
+      ph: "7.0–8.5",
+      summary: "Декоративний короп Японії: живе десятиліттями у просторому ставку.",
+      description:
+        "Коі — результат століть селекції звичайного коропа. Візерунки kohaku, sanke, showa оцінюють на виставках. Рибам потрібен об’єм води, фільтрація та захист від чапель. Взимку метаболізм сповільнюється, корм припиняють, коли температура падає. Коі впізнають людей, підпливають до берега і можуть жити довше за собаку — за умови якісної води та простору.",
+      facts: JSON.stringify([
+        "Деякі коі в Японії жили понад 50 років.",
+        "Колір залежить від генетики, корму та сонячного світла.",
+        "У маленькому акваріумі коі швидко хворіють і відстають у рості.",
+      ]),
+      image: "/images/koi.png",
+    },
+    {
+      slug: "goldfish",
+      name_uk: "Золота рибка",
+      name_lat: "Carassius auratus",
+      family: "Cyprinidae",
+      habitat_slug: "pond",
+      region: "Китай, згодом увесь світ",
+      size_cm: 20,
+      lifespan_years: 15,
+      diet: "Всеїдна",
+      care_level: "Початковий",
+      temperature: "18–24 °C",
+      ph: "6.5–8.0",
+      summary: "Перша одомашнена декоративна риба; потребує більше місця, ніж здається.",
+      description:
+        "Золота рибка походить від срібного карася. Селекція дала вуалехвостих, оранд і телескопів. Попри репутацію «рибки для початківців», їй потрібен великий об’єм, сильна фільтрація й прохолодна вода. У кулястій вазі риба страждає від нестачі кисню та накопичення аміаку. Найкраще виглядає в просторому холодноводному акваріумі або ставку з рослинами.",
+      facts: JSON.stringify([
+        "Пам’ять золотої рибки триває тижні, а не три секунди.",
+        "Оранжево-червоний колір посилюється каротиноїдами в кормі.",
+        "Вуалехвости чутливі до інфекцій плавців у брудній воді.",
+      ]),
+      image: "/images/goldfish.png",
+    },
+    {
+      slug: "angelfish",
+      name_uk: "Скалярія",
+      name_lat: "Pterophyllum scalare",
+      family: "Cichlidae",
+      habitat_slug: "amazon",
+      region: "Басейн Амазонки",
+      size_cm: 15,
+      lifespan_years: 10,
+      diet: "Всеїдна (дрібний корм, личинки)",
+      care_level: "Середній",
+      temperature: "26–30 °C",
+      ph: "6.0–7.5",
+      summary: "Високе «вітрило» амазонських цихлід; пари охороняють ікру на листі.",
+      description:
+        "Скалярія тримається серед вертикальних стебел рослин, тому акваріум має бути високим. У природі риби живуть зграями, в неволі часто утворюють стійкі пари. Вони можуть скльовувати малька неонів, якщо голодні. М’яка кислувата вода, корчі та широке листя анубіасів і ехінодорусів відтворюють біотоп Амазонки.",
+      facts: JSON.stringify([
+        "Форма тіла маскує рибу серед стебел рослин.",
+        "Батьки обмахують ікру плавцями, щоб наситити її киснем.",
+        "Селекційні форми бувають мармуровими, вуалевими та золотистими.",
+      ]),
+      image: "/images/angelfish.png",
+    },
+    {
+      slug: "neon-tetra",
+      name_uk: "Неон звичайний",
+      name_lat: "Paracheirodon innesi",
+      family: "Characidae",
+      habitat_slug: "amazon",
+      region: "Перу, Колумбія, Бразилія",
+      size_cm: 4,
+      lifespan_years: 5,
+      diet: "Дрібний всеїдний",
+      care_level: "Початковий",
+      temperature: "22–26 °C",
+      ph: "5.5–7.0",
+      summary: "Зграйна харацинова рибка з неоновою смугою; основа «голландського» акваріума.",
+      description:
+        "Неони тримаються зграями від десяти особин. Блакитна смуга відбиває світло завдяки кристалам гуаніну. У темній воді з танінами забарвлення стає яскравішим. Рибки мирні, люблять тінь рослин і не терплять різких стрибків параметрів. Найкращі сусіди — інші дрібні харацинові, коридораси та креветки.",
+      facts: JSON.stringify([
+        "Смуга «вимикається» вночі, коли рибка відпочиває.",
+        "У природі живуть у чорноводних притоках.",
+        "Стрес від самотності знижує імунітет — тримайте зграю.",
+      ]),
+      image: "/images/neon-tetra.png",
+    },
+    {
+      slug: "discus",
+      name_uk: "Дискус",
+      name_lat: "Symphysodon aequifasciatus",
+      family: "Cichlidae",
+      habitat_slug: "amazon",
+      region: "Амазонка, Ріу-Негру",
+      size_cm: 18,
+      lifespan_years: 12,
+      diet: "Всеїдний (живий і якісний корм)",
+      care_level: "Експерт",
+      temperature: "28–31 °C",
+      ph: "5.5–6.8",
+      summary: "«Король акваріума»: круглий диск, вимогливий до чистоти та тепла.",
+      description:
+        "Дискус живе в теплому чорноводі серед затопленого лісу. Тіло сплющене, як монета, що допомагає ховатися між коренями. Мальки харчуються слизом шкіри батьків — рідкісна стратегія серед риб. В акваріумі дискусам потрібні часті підміни, висока температура, м’яка вода і спокій. Це вид для акваріуміста, який уже опанував азотний цикл.",
+      facts: JSON.stringify([
+        "Батьківський слиз містить антитіла для мальків.",
+        "Яскраві «піжони» — переважно селекційні лінії.",
+        "Стрес від галасливих сусідів легко зриває імунітет.",
+      ]),
+      image: "/images/discus.png",
+    },
+    {
+      slug: "mandarin",
+      name_uk: "Мандаринка",
+      name_lat: "Synchiropus splendidus",
+      family: "Callionymidae",
+      habitat_slug: "coral-reef",
+      region: "Західна Пацифіка",
+      size_cm: 6,
+      lifespan_years: 7,
+      diet: "Мікрофауна живого каменю",
+      care_level: "Експерт",
+      temperature: "24–26 °C",
+      ph: "8.1–8.4",
+      summary: "Психоделічне забарвлення і повільне «ходіння» по дну рифу.",
+      description:
+        "Мандаринка не плаває як типові риби: вона «крокує» грудними плавцями по кораловому щебені в пошуках дрібних рачків. Шкіра вкрита слизом замість луски, а пігментні клітини створюють візерунок, унікальний для кожної особини. У незрілому рифі риба часто голодує. Потрібен великий, усталений морський акваріум з живою мікрофауною — інакше мандаринка не проживе довго.",
+      facts: JSON.stringify([
+        "Не має луски — захист дає товстий слиз.",
+        "Шлюбний танець відбувається в товщі води на заході сонця.",
+        "Не підходить для нано-рифів без розвиненої мікрофауни.",
+      ]),
+      image: "/images/mandarin.png",
+    },
+  ];
+
+  const gallery = [
+    { title: "Клоун серед актиній", caption: "Симбіоз, що став іконою тропіків.", image: "/images/clownfish.png", category: "риф" },
+    { title: "Бетта в напівтемряві", caption: "Іридесцентні плавці лабіринтової риби.", image: "/images/betta.png", category: "прісна" },
+    { title: "Коі біля поверхні", caption: "Декоративний короп японського ставка.", image: "/images/koi.png", category: "ставок" },
+    { title: "Золота рибка", caption: "Класика холодноводного акваріума.", image: "/images/goldfish.png", category: "ставок" },
+    { title: "Скалярія Амазонки", caption: "Вертикальний силует серед рослин.", image: "/images/angelfish.png", category: "прісна" },
+    { title: "Зграя неонів", caption: "Неонова смуга в темній воді.", image: "/images/neon-tetra.png", category: "прісна" },
+    { title: "Дискус", caption: "Круглий профіль «короля акваріума».", image: "/images/discus.png", category: "прісна" },
+    { title: "Мандаринка", caption: "Візерунок, якого немає в двох однакових риб.", image: "/images/mandarin.png", category: "риф" },
+    { title: "Риф на світанку", caption: "Світло пробивається крізь корали.", image: "/images/habitat-reef.png", category: "середовище" },
+    { title: "Чорна вода", caption: "Таніни й коріння затопленого лісу.", image: "/images/habitat-amazon.png", category: "середовище" },
+    { title: "Акваскейп", caption: "Рослинний акваріум як живий пейзаж.", image: "/images/aquarium-scape.png", category: "акваріум" },
+    { title: "Товща океану", caption: "Пелагічний простір без берегів.", image: "/images/habitat-ocean.png", category: "середовище" },
+  ];
+
+  const tx = db.transaction(() => {
+    for (const row of habitats) insertHabitat.run(row);
+    for (const row of fish) insertFish.run(row);
+    for (const row of gallery) insertGallery.run(row);
+  });
+  tx();
+}
+
+module.exports = db;

@@ -1,0 +1,40 @@
+<%- include('partials/head.html') %>
+<%- include('partials/header.html') %>
+<main id="main">
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Візуальний журнал</p>
+      <h1>Галерея</h1>
+      <p class="lead">Різні кадри з таблиці gallery. Клацніть, щоб відкрити на весь екран.</p>
+      <div class="filters" role="group" aria-label="Категорія">
+        <button class="chip is-on" type="button" data-gallery="all">Усі</button>
+        <button class="chip" type="button" data-gallery="риф">Риф</button>
+        <button class="chip" type="button" data-gallery="прісна">Прісна</button>
+        <button class="chip" type="button" data-gallery="ставок">Ставок</button>
+        <button class="chip" type="button" data-gallery="середовище">Середовища</button>
+        <button class="chip" type="button" data-gallery="акваріум">Акваріум</button>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container gallery-grid" id="gallery">
+      <% items.forEach(function (item) { %>
+        <figure class="gallery-item" data-cat="<%= item.category %>">
+          <button type="button" data-lightbox="<%= item.image %>" data-caption="<%= item.title %> — <%= item.caption %>">
+            <img src="<%= item.image %>" alt="<%= item.title %>: <%= item.caption %>" width="640" height="480" loading="lazy">
+          </button>
+          <figcaption>
+            <strong><%= item.title %></strong>
+            <span><%= item.caption %></span>
+          </figcaption>
+        </figure>
+      <% }) %>
+    </div>
+  </section>
+</main>
+<div class="lightbox" hidden id="lightbox" role="dialog" aria-modal="true" aria-label="Перегляд зображення">
+  <button type="button" class="lightbox-close" data-close>&times;</button>
+  <img alt="">
+  <p class="lightbox-caption"></p>
+</div>
+<%- include('partials/footer.html') %>

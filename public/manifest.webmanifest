@@ -1,0 +1,17 @@
+{
+  "name": "AquaFauna",
+  "short_name": "AquaFauna",
+  "description": "Енциклопедія світу риб",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#041018",
+  "theme_color": "#041018",
+  "lang": "uk",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

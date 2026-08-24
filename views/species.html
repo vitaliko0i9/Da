@@ -1,0 +1,53 @@
+<%- include('partials/head.html') %>
+<%- include('partials/header.html') %>
+<main id="main">
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Каталог</p>
+      <h1>Види риб</h1>
+      <p class="lead">Фільтруйте за середовищем. Дані — з таблиці <code>fish</code> у SQLite.</p>
+      <div class="filters" role="group" aria-label="Фільтр за середовищем">
+        <button class="chip is-on" type="button" data-filter="all">Усі</button>
+        <% habitats.forEach(function (h) { %>
+          <button class="chip" type="button" data-filter="<%= h.slug %>"><%= h.name %></button>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container species-grid" id="species-list">
+      <% fishes.forEach(function (f) { %>
+        <article class="species-card" data-habitat="<%= f.habitat_slug %>">
+          <a href="/fish/<%= f.slug %>">
+            <img src="<%= f.image %>" alt="<%= f.name_uk %>, <%= f.name_lat %>" width="640" height="480" loading="lazy">
+            <div>
+              <h2><%= f.name_uk %></h2>
+              <p class="latin"><%= f.name_lat %></p>
+              <p><%= f.summary %></p>
+              <p class="meta"><%= f.habitat_name %> · <%= f.care_level %></p>
+            </div>
+          </a>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+</main>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Каталог риб AquaFauna",
+  "numberOfItems": <%= fishes.length %>,
+  "itemListElement": [
+    <% fishes.forEach(function (f, i) { %>
+    {
+      "@type": "ListItem",
+      "position": <%= i + 1 %>,
+      "url": "<%= siteUrl %>/fish/<%= f.slug %>",
+      "name": "<%= f.name_uk %>"
+    }<%= i < fishes.length - 1 ? ',' : '' %>
+    <% }) %>
+  ]
+}
+</script>
+<%- include('partials/footer.html') %>

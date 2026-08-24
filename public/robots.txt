@@ -1,0 +1,12 @@
+# robots.txt для енциклопедії AquaFauna
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /css/
+Allow: /js/
+
+# Заборона індексації технічних API-ендпоінтів
+Disallow: /api/
+
+# Карта сайту
+Sitemap: http://localhost:3000/sitemap.xml

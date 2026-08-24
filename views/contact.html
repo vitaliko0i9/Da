@@ -1,0 +1,65 @@
+<%- include('partials/head.html') %>
+<%- include('partials/header.html') %>
+<main id="main" class="section">
+  <div class="container auth-container">
+    <div class="wrapper">
+      <div class="form-box login">
+        <h2>Вхід</h2>
+        <form action="#">
+          <div class="input-box">
+            <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
+            <input type="email" required class="reginput" id="userEmail" placeholder=" "> 
+            <label for="userEmail">Email</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+            <input type="password" required class="reginput" id="userPassword" placeholder=" ">
+            <label for="userPassword">Пароль</label>
+          </div>
+
+          <div class="remember-fogrot">
+            <label><input type="checkbox"> Запам'ятати мене</label>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-btn">Увійти</button>
+          <div class="login-register">
+            <p>Ще немає акаунту? <a href="#" class="register-link">Зареєструватися</a></p>
+          </div>
+        </form>
+      </div>
+
+      <div class="form-box register">
+        <h2>Реєстрація</h2>
+        <form action="#">
+          <div class="input-box">
+            <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
+            <input type="text" id="regUsername" required class="reginput" placeholder=" ">
+            <label for="regUsername">Ім'я користувача</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
+            <input type="email" id="regEmail" required class="reginput" placeholder=" ">
+            <label for="regEmail">Email</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+            <input type="password" id="regPassword" required class="reginput" placeholder=" ">
+            <label for="regPassword">Пароль</label>
+          </div> 
+          <div class="remember-fogrot">
+            <label><input type="checkbox" required> Я погоджуюсь з правилами</label>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-btn" id="submitBtn">Зареєструватися</button>
+          <div class="login-register">
+            <p>Вже є акаунт? <a href="#" class="login-link">Увійти</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script src="/js/index.js"></script>
+<%- include('partials/footer.html') %>
