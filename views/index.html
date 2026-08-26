@@ -1,18 +1,21 @@
 <%- include('partials/head.html') %>
 <%- include('partials/header.html') %>
+
 <main id="main">
-  <section class="hero" aria-label="Головний екран">
-    <div class="parallax-scene" data-parallax>
-      <div class="parallax-layer layer-back" data-speed="0.32" style="background-image:url('/images/hero-ocean.png')"></div>
-      <div class="parallax-layer layer-fish" data-speed="0.8" aria-hidden="true"></div>
-      <div class="parallax-layer layer-fish-front" data-speed="-0.25" aria-hidden="true"></div>
-      <div class="parallax-layer layer-mid" data-speed="0.12"></div>
-      <canvas class="bubble-canvas" data-bubbles aria-hidden="true"></canvas>
-      <div class="hero-content container" data-speed="-0.18">
-        <p class="eyebrow reveal">Енциклопедія глибин</p>
-        <h1 class="reveal">Світ риб — від рифу до ставка</h1>
-        <p class="lead reveal">Відкрийте для себе дивовижне розмаїття підводного світу, природні біотопи та правила дбайливого догляду за рибами.</p>
-        <div class="hero-actions reveal">
+  <!-- Головний банер (Hero блок) -->
+  <section class="hero">
+    <div class="parallax-scene">
+      <div class="parallax-layer layer-back" style="background-image: url('/images/hero-ocean.png')"></div>
+      <div class="parallax-layer layer-fish"></div>
+      <div class="parallax-layer layer-fish-front"></div>
+      <div class="parallax-layer layer-mid"></div>
+      
+      <div class="hero-content container">
+        <p class="eyebrow">Енциклопедія глибин</p>
+        <h1>Світ риб — від рифу до ставка</h1>
+        <p class="lead">Відкрийте для себе дивовижне розмаїття підводного світу, природні біотопи та правила дбайливого догляду за рибами.</p>
+        
+        <div class="hero-actions">
           <a class="btn btn-primary" href="/species">Відкрити каталог</a>
           <a class="btn btn-ghost" href="/habitats">Де вони живуть</a>
         </div>
@@ -20,31 +23,34 @@
     </div>
   </section>
 
+  <!-- Блок "Чому AquaFauna" (3 картки) -->
   <section class="section">
     <div class="container">
-      <header class="section-head reveal">
+      <div class="section-head">
         <h2>Чому AquaFauna</h2>
         <p>Коротко про риб без міфів: не «три секунди пам’яті», не вазочка для бетти і не коі в двадцятилітровому кубі.</p>
-      </header>
+      </div>
+
       <div class="cards-3">
-        <article class="card reveal">
+        <div class="card">
           <h3>Види з характером</h3>
           <p>Морські клоуни й мандаринки, амазонські цихліди, коропи ставків — кожен із фактами та параметрами води.</p>
-        </article>
-        <article class="card reveal">
+        </div>
+        <div class="card">
           <h3>Біотопи</h3>
           <p>Риф, чорна вода Амазонки, парковий ставок і відкритий океан. Середовище пояснює поведінку краще за етикетку в магазині.</p>
-        </article>
-        <article class="card reveal">
+        </div>
+        <div class="card">
           <h3>Догляд без шкоди</h3>
           <p>Азотний цикл, фільтрація, зграя vs одиночка — гід, після якого хочеться виміряти нітрати, а не купити «декор».</p>
-        </article>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="parallax-fixed" style="background-image:url('/images/habitat-reef.png')">
-    <div class="container parallax-band-copy reveal">
+  <!-- Промо блок з фоновим зображенням -->
+  <section class="parallax-fixed" style="background-image: url('/images/habitat-reef.png')">
+    <div class="container parallax-band-copy">
       <p class="eyebrow">Морські глибини</p>
       <h2>Риф займає менше 1% дна</h2>
       <p>Попри невелику площу океанічного дна, коралові рифи забезпечують прихисток для понад 25% усіх морських мешканців планети.</p>
@@ -52,17 +58,19 @@
     </div>
   </section>
 
+  <!-- Популярні види риб із бази даних -->
   <section class="section">
     <div class="container">
-      <header class="section-head reveal">
+      <div class="section-head">
         <h2>Популярні види</h2>
         <p>Ознайомтеся з найяскравішими мешканцями водних глибин. Оберіть вид, щоб дізнатися всі характеристики та параметри води.</p>
-      </header>
+      </div>
+
       <div class="species-grid">
         <% fishes.forEach(function (f) { %>
-          <a class="species-card reveal" href="/fish/<%= f.slug %>">
-            <img src="<%= f.image %>" alt="<%= f.name_uk %> (<%= f.name_lat %>)" width="640" height="480" loading="lazy">
-            <div>
+          <a class="species-card" href="/fish/<%= f.slug %>">
+            <img src="<%= f.image %>" alt="<%= f.name_uk %>" width="640" height="480">
+            <div class="species-card-content">
               <h3><%= f.name_uk %></h3>
               <p class="latin"><%= f.name_lat %></p>
               <p><%= f.summary %></p>
@@ -73,4 +81,5 @@
     </div>
   </section>
 </main>
+
 <%- include('partials/footer.html') %>

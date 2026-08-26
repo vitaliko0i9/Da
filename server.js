@@ -241,6 +241,27 @@ app.get("/contact", (req, res) => {
   );
 });
 
+// Карта сайту (HTML)
+app.get("/sitemap", async (req, res, next) => {
+  try {
+    const fishes = await Fish.find().lean();
+    const habitats = await Habitat.find().lean();
+
+    res.render("sitemap.html", {
+      ...getMeta({
+        path: "/sitemap",
+        title: "Карта сайту — Структура та сторінки | AquaFauna",
+        description: "Повна карта сторінок енциклопедії AquaFauna: каталог видів, біотопи, гід з догляду та фотогалерея.",
+        keywords: "карта сайту, sitemap, структура сайту aquafauna",
+      }),
+      fishes,
+      habitats,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // SEO: Robots
 app.get("/robots.txt", (req, res) => {
   const siteUrl = process.env.SITE_URL || `http://localhost:${PORT}`;
@@ -261,7 +282,7 @@ Sitemap: ${siteUrl}/sitemap.xml
   );
 });
 
-// SEO: Sitemap
+// SEO: Sitemap (XML)
 app.get("/sitemap.xml", async (req, res, next) => {
   try {
     const siteUrl = process.env.SITE_URL || `http://localhost:${PORT}`;
@@ -273,6 +294,7 @@ app.get("/sitemap.xml", async (req, res, next) => {
       "/aquarium",
       "/gallery",
       "/contact",
+      "/sitemap",
       ...fishes.map((f) => `/fish/${f.slug}`),
     ];
 

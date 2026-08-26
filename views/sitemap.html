@@ -1,0 +1,72 @@
+<%- include('partials/head.html') %>
+<%- include('partials/header.html') %>
+
+<main id="main" class="section">
+  <div class="container">
+    <div class="page-hero">
+      <p class="eyebrow">Навігація</p>
+      <h1>Карта сайту (Sitemap)</h1>
+      <p class="lead">Повна структура сторінок енциклопедії AquaFauna для зручної навігації та пошукових систем.</p>
+    </div>
+
+    <div class="sitemap-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem;">
+      
+      <!-- Основні розділи -->
+      <div class="card">
+        <h3>Головні сторінки</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.6rem; margin-top: 1rem;">
+          <li><a href="/">🏠 Головна сторінка</a></li>
+          <li><a href="/species">🐟 Каталог усіх видів</a></li>
+          <li><a href="/habitats">🌊 Середовища існування (Біотопи)</a></li>
+          <li><a href="/aquarium">🌿 Гід з догляду за акваріумом</a></li>
+          <li><a href="/gallery">🖼️ Фотогалерея</a></li>
+          <li><a href="/contact">👤 Вхід / Реєстрація</a></li>
+        </ul>
+      </div>
+
+      <!-- Сторінки окремих видів риб -->
+      <div class="card">
+        <h3>Каталог видів риб</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.6rem; margin-top: 1rem;">
+          <% if (fishes && fishes.length) { %>
+            <% fishes.forEach(function(f) { %>
+              <li>
+                <a href="/fish/<%= f.slug %>">
+                  🐠 <%= f.name_uk %> <span class="latin" style="font-size: 0.85rem;">(<%= f.name_lat %>)</span>
+                </a>
+              </li>
+            <% }) %>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Природні біотопи -->
+      <div class="card">
+        <h3>Природні біотопи</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.6rem; margin-top: 1rem;">
+          <% if (habitats && habitats.length) { %>
+            <% habitats.forEach(function(h) { %>
+              <li>
+                <a href="/habitats#<%= h.slug %>">
+                  💧 <%= h.name %>
+                </a>
+              </li>
+            <% }) %>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Технічні посилання -->
+      <div class="card">
+        <h3>Для пошукових систем</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.6rem; margin-top: 1rem;">
+          <li><a href="/sitemap.xml" target="_blank">📄 XML Карта сайту (sitemap.xml)</a></li>
+          <li><a href="/robots.txt" target="_blank">🤖 Файл інструкцій Robots.txt</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer.html') %>

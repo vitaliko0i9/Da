@@ -1,37 +1,48 @@
 <%- include('partials/head.html') %>
 <%- include('partials/header.html') %>
+
 <main id="main">
+  <!-- Заголовок сторінки біотопів -->
   <section class="page-hero">
     <div class="container">
       <p class="eyebrow">Біотопи</p>
       <h1>Середовища існування</h1>
-      <p class="lead">Вода — не просто «синя». Солоність, світло, таніни й течія вирішують, хто виживе.</p>
+      <p class="lead">Вода буває різною: солоність, температура, рослинність та освітлення визначають умови життя для кожного виду.</p>
     </div>
   </section>
-  <% habitats.forEach(function (h, index) { %>
-    <article class="habitat-block <%= index % 2 ? 'alt' : '' %>" id="<%= h.slug %>">
-      <div class="habitat-visual parallax-fixed-strip" style="background-image:url('<%= h.image %>')" role="img" aria-label="<%= h.name %>"></div>
-      <div class="container habitat-copy">
-        <h2><%= h.name %></h2>
-        <p class="lead"><%= h.summary %></p>
-        <p><%= h.description %></p>
-        <ul class="spec-pills">
-          <li>Тип води: <%= h.water_type %></li>
-          <li>Температура: <%= h.temperature %></li>
-          <li>Солоність: <%= h.salinity %></li>
-        </ul>
-        <% if (h.fishes.length) { %>
-          <div class="mini-fish">
-            <% h.fishes.forEach(function (f) { %>
-              <a href="/fish/<%= f.slug %>">
-                <img src="<%= f.image %>" alt="<%= f.name_uk %>" width="80" height="60">
-                <span><%= f.name_uk %></span>
-              </a>
-            <% }) %>
-          </div>
-        <% } %>
-      </div>
-    </article>
-  <% }) %>
+
+  <!-- Список середовищ -->
+  <div class="habitats-list">
+    <% habitats.forEach(function (h, index) { %>
+      <article class="habitat-block <%= index % 2 ? 'alt' : '' %>" id="<%= h.slug %>">
+        <div class="habitat-visual parallax-fixed-strip" style="background-image: url('<%= h.image %>')"></div>
+        
+        <div class="container habitat-copy">
+          <h2><%= h.name %></h2>
+          <p class="lead"><%= h.summary %></p>
+          <p><%= h.description %></p>
+          
+          <ul class="spec-pills">
+            <li>Тип води: <%= h.water_type %></li>
+            <li>Температура: <%= h.temperature %></li>
+            <li>Солоність: <%= h.salinity %></li>
+          </ul>
+
+          <!-- Представники біотопу -->
+          <% if (h.fishes && h.fishes.length) { %>
+            <div class="mini-fish">
+              <% h.fishes.forEach(function (f) { %>
+                <a href="/fish/<%= f.slug %>">
+                  <img src="<%= f.image %>" alt="<%= f.name_uk %>" width="80" height="60">
+                  <span><%= f.name_uk %></span>
+                </a>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </article>
+    <% }) %>
+  </div>
 </main>
+
 <%- include('partials/footer.html') %>

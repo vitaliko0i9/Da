@@ -1,29 +1,36 @@
 <%- include('partials/head.html') %>
 <%- include('partials/header.html') %>
+
 <main id="main">
-  <article class="fish-page">
-    <header class="fish-hero">
-      <img src="<%= fish.image %>" alt="<%= fish.name_uk %> (<%= fish.name_lat %>)" width="960" height="720">
+  <div class="fish-page">
+    <!-- Шапка сторінки виду з фото -->
+    <div class="fish-hero">
+      <img src="<%= fish.image %>" alt="<%= fish.name_uk %>" width="960" height="720">
       <div class="container">
         <p class="eyebrow"><%= fish.family %></p>
         <h1><%= fish.name_uk %></h1>
         <p class="latin"><%= fish.name_lat %></p>
         <p class="lead"><%= fish.summary %></p>
       </div>
-    </header>
+    </div>
+
+    <!-- Основний опис та таблиця параметрів -->
     <div class="container fish-layout">
-      <div>
+      <div class="fish-description">
         <h2>Опис</h2>
         <p><%= fish.description %></p>
-        <h2>Факти</h2>
+
+        <h2>Цікаві факти</h2>
         <ul class="facts">
           <% fish.facts.forEach(function (fact) { %>
             <li><%= fact %></li>
           <% }) %>
         </ul>
       </div>
+
+      <!-- Бокова картка з параметрами -->
       <aside class="spec-card">
-        <h2>Параметри</h2>
+        <h2>Параметри води та догляду</h2>
         <dl>
           <div><dt>Регіон</dt><dd><%= fish.region %></dd></div>
           <div><dt>Середовище</dt><dd><a href="/habitats#<%= fish.habitat_slug %>"><%= fish.habitat_name %></a></dd></div>
@@ -32,19 +39,21 @@
           <div><dt>Раціон</dt><dd><%= fish.diet %></dd></div>
           <div><dt>Складність</dt><dd><%= fish.care_level %></dd></div>
           <div><dt>Температура</dt><dd><%= fish.temperature %></dd></div>
-          <div><dt>pH</dt><dd><%= fish.ph %></dd></div>
+          <div><dt>Кислотність (pH)</dt><dd><%= fish.ph %></dd></div>
         </dl>
       </aside>
     </div>
-    <% if (related.length) { %>
+
+    <!-- Схожі види з того ж біотопу -->
+    <% if (related && related.length) { %>
       <section class="section">
         <div class="container">
           <h2>З того ж біотопу</h2>
           <div class="species-grid compact">
             <% related.forEach(function (r) { %>
               <a class="species-card" href="/fish/<%= r.slug %>">
-                <img src="<%= r.image %>" alt="<%= r.name_uk %>" width="480" height="360" loading="lazy">
-                <div>
+                <img src="<%= r.image %>" alt="<%= r.name_uk %>" width="480" height="360">
+                <div class="species-card-content">
                   <h3><%= r.name_uk %></h3>
                   <p class="latin"><%= r.name_lat %></p>
                 </div>
@@ -54,18 +63,7 @@
         </div>
       </section>
     <% } %>
-  </article>
+  </div>
 </main>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "<%= fish.name_uk %> (<%= fish.name_lat %>)",
-  "description": "<%= fish.summary %>",
-  "image": "<%= siteUrl %><%= fish.image %>",
-  "inLanguage": "uk",
-  "author": { "@type": "Organization", "name": "AquaFauna" },
-  "mainEntityOfPage": "<%= siteUrl %>/fish/<%= fish.slug %>"
-}
-</script>
+
 <%- include('partials/footer.html') %>

@@ -1,20 +1,28 @@
+  <!-- Шапка сайту з логотипом та меню -->
   <header class="site-header">
     <div class="container header-inner">
-      <a class="logo" href="/" aria-label="AquaFauna — на головну">
-        <span class="logo-mark" aria-hidden="true">
+      <a class="logo" href="/">
+        <span class="logo-mark">
           <svg viewBox="0 0 32 32" width="28" height="28">
             <path fill="currentColor" d="M4 18c6-2 9-8 12-8s6 4 12 6c-5 3-8 8-12 8S8 21 4 18zm14-7c1.2 0 2 .8 2 1.6S19.2 14 18 14s-2-.8-2-1.6.8-1.4 2-1.4z"/>
           </svg>
         </span>
         <span>AquaFauna</span>
       </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
-        <span class="sr-only">Меню</span>
-        <span></span><span></span><span></span>
+
+      <!-- Кнопка мобільного меню -->
+      <button class="nav-toggle" type="button">
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
-      <nav id="site-nav" class="site-nav" aria-label="Головна навігація">
+
+      <!-- Меню навігації -->
+      <nav class="site-nav">
         <% nav.forEach(function (item) { %>
-          <a href="<%= item.href %>" class="<%= path === item.href || (item.href !== '/' && path.indexOf(item.href) === 0) ? 'is-active' : '' %>"><%= item.label %></a>
+          <a href="<%= item.href %>" class="<%= path === item.href || (item.href !== '/' && path.indexOf(item.href) === 0) ? 'is-active' : '' %>">
+            <%= item.label %>
+          </a>
         <% }) %>
       </nav>
     </div>
