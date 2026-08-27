@@ -58,7 +58,7 @@ function getMeta(options = {}) {
   return {
     siteName: "AquaFauna",
     siteUrl,
-    ogImage: options.ogImage || "/images/hero-ocean.png",
+    ogImage: options.ogImage || "/images/hero-ocean.webp",
     title: options.title || "AquaFauna — Енциклопедія світу риб | Біотопи, види та догляд",
     description:
       options.description ||

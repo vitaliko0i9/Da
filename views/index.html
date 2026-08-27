@@ -5,10 +5,12 @@
   <!-- Головний банер (Hero блок) -->
   <section class="hero">
     <div class="parallax-scene">
-      <div class="parallax-layer layer-back" style="background-image: url('/images/hero-ocean.png')"></div>
+      <!-- Фонове зображення героя — пріоритетне завантаження для LCP -->
+      <div class="parallax-layer layer-back" style="background-image: url('/images/hero-ocean.webp')"></div>
       <div class="parallax-layer layer-fish"></div>
       <div class="parallax-layer layer-fish-front"></div>
       <div class="parallax-layer layer-mid"></div>
+
       
       <div class="hero-content container">
         <p class="eyebrow">Енциклопедія глибин</p>
@@ -49,7 +51,7 @@
   </section>
 
   <!-- Промо блок з фоновим зображенням -->
-  <section class="parallax-fixed" style="background-image: url('/images/habitat-reef.png')">
+  <section class="parallax-fixed" style="background-image: url('/images/habitat-reef.webp')">
     <div class="container parallax-band-copy">
       <p class="eyebrow">Морські глибини</p>
       <h2>Риф займає менше 1% дна</h2>
@@ -69,7 +71,8 @@
       <div class="species-grid">
         <% fishes.forEach(function (f) { %>
           <a class="species-card" href="/fish/<%= f.slug %>">
-            <img src="<%= f.image %>" alt="<%= f.name_uk %>" width="640" height="480">
+            <!-- loading="lazy" — зображення нижче екрану завантажуються пізніше -->
+            <img src="<%= f.image %>" alt="<%= f.name_uk %>" width="640" height="480" loading="lazy">
             <div class="species-card-content">
               <h3><%= f.name_uk %></h3>
               <p class="latin"><%= f.name_lat %></p>
